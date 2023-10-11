@@ -4,12 +4,17 @@
 directory="./databases"
 
 create_database() {
+    echo "Please enter database name:"
+    read db_name
     if [[ -d "$directory" ]]; then
-        touch ./$directory/somethings
+        touch ./"$directory"/"$db_name"
     else 
         mkdir "$directory"
-        touch ./"$directory"/somethings
+        touch ./"$directory"/"$db_name"
     fi
+    echo "$db_name" >> ./"$directory"/"$db_name"
+    stars=$(printf "*%.0s" {1..39})
+    echo "$stars" >> ./"$directory"/"$db_name"
 }
 
 create_table() {
@@ -34,5 +39,12 @@ display_pages() {
 
 echo "Welcome to the Database management script"
 echo "*****************************************"
-echo "For the man pages use -man option, or insert man command"
+echo "For the manual pages, use command man"
+while [ 1 ]
+do
+    echo "What would you like to do:"
+    read command
 
+    create_database
+
+done 
