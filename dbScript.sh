@@ -45,6 +45,34 @@ do
     echo "What would you like to do:"
     read command
 
-    create_database
+    case "$command" in
+        "create-db")
+        echo "You chose to create a database"
+        create_database
+        ;;
+        "create-table")
+        echo "You chose to create a table"
+        create_table
+        ;;
+        "read-value")
+        echo "You chose to read a value"
+        ;;
+        "add-value")
+        echo "You chose to read a value"
+        ;;
+        "remove-data")
+        echo "You chose to delete a value"
+        ;;
+        "man")
+        display_pages
+        ;;
+        "quit")
+        echo "Exiting"
+        break
+        ;;
+        *)
+        echo "Command doesn't exist -> Check manual pages!!"
+        ;;
+    esac
 
 done 
