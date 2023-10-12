@@ -63,16 +63,17 @@ create_table() {
     pattern="**"
     for word in "${words[@]}"
     do
-        num_spaces=$((8 - ${#word}))
+        num_spaces=$((7 - ${#word}))
         pattern+=" ${word}"
 
         for ((i = 0; i < num_spaces; i++)); 
         do
         pattern+=" "
         done
-        pattern+="**"
+        pattern+="*"
+    
     done
-    echo "$pattern"
+    pattern+="*"
     echo "$pattern" >> ./"$directory"/"$db_name.txt"
 
 }
