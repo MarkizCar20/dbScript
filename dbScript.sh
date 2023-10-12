@@ -1,9 +1,10 @@
 #!/bin/bash
-
 #SCRIPT FOR CREATING AND MANAGING SIMPLE DATABASES
+
 directory="./databases"
 
 create_database() {
+
     echo "Please enter database name:"
     read db_name
     if [[ -d "$directory" ]]; then
@@ -15,9 +16,11 @@ create_database() {
     echo "$db_name" >> ./"$directory"/"$db_name.txt"
     stars=$(printf "*%.0s" {1..39})
     echo "$stars" >> ./"$directory"/"$db_name.txt"
+
 }
 
 create_table() {
+
     echo "Enter the database in which you would like to create a table: "
     read db_name
     if [[ ! -d "./$directory" ]]; then
@@ -73,25 +76,33 @@ create_table() {
         pattern+="*"
     
     done
-    #stars=$(printf "*%.0s" {1..39})
+
     pattern+="*"
     echo "$pattern" >> ./"$directory"/"$db_name.txt"
-    #echo "$stars" >> ./"$directory"/"$db_name.txt"
 
 }
 
-#this can be done with the sed command
 display_data() {
-    echo "Data"
+
+    echo "From which database would you like to read a value:"
+    read db_name
+    echo "These are the database datatypes:"
+    sed -n '/^\*\* /{p;q;}' ./"$directory"/"$db_name.txt"
+    echo "What is the value of the parametere you're searching for:"
+    read value
+
+    echo "Here's the row of data:"
+    grep "^\*\* $value[[:space:]]*\*" ./"$directory"/"$db_name.txt"
+
 }
 
-#thinking about using either sed or awk
 add_data() {
+
     echo "To which database would you like to add?"
     read db_name
 
-    echo "Enter the values for the following parameters:"
-    sed -n '/^\*\* /p' ./"$directory"/"$db_name.txt"
+    echo "Enter the values for the following parameters(Enter / for no value): "
+    sed -n '/^\*\* /{p;q;}' ./"$directory"/"$db_name.txt"
     
     words=()
 
@@ -103,6 +114,11 @@ add_data() {
         if [ -z "$word" ]
         then
             break
+        fi
+
+        if [ "$word" = "/" ]
+        then
+            word=" "
         fi
 
         if [ "$string_length" -gt 7 ]
@@ -118,6 +134,7 @@ add_data() {
     pattern="**"
     for word in "${words[@]}"
     do
+    
         num_spaces=$((7 - ${#word}))
         pattern+=" ${word}"
 
@@ -132,20 +149,25 @@ add_data() {
     pattern+="*"
     echo "$pattern" >> ./"$directory"/"$db_name.txt"
     echo "Added row to table!"
+
 }
 
-#definetely sed with this
 delete_data() {
+
     echo "Data delete"
+
 }
 
 display_pages() {
+
     echo "Man Pages"
+
 }
 
 echo "Welcome to the Database management script"
 echo "*****************************************"
 echo "For the manual pages, use command man"
+echo "*****************************************"
 while [ 1 ]
 do
     echo "What would you like to do:"
@@ -160,11 +182,11 @@ do
         echo "You chose to create a table"
         create_table
         ;;
-        "read-value")
+        "read-data")
         echo "You chose to read a value"
         display_data
         ;;
-        "add-value")
+        "add-data")
         echo "You chose to add a value"
         add_data
         ;;
