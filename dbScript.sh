@@ -3,6 +3,19 @@
 
 directory="./databases"
 
+database_check() {
+    if [[ ! -d "./$directory" ]]; then
+    echo "Folder doesn't exist, create a database folder first!"
+    exit
+    else
+        if [[ ! -e "./$directory/$db_name.txt" ]]; 
+        then
+            echo "Database doesn't exist, you need to create it first!"
+            exit
+        fi
+    fi
+}
+
 create_database() {
 
     echo "Please enter database name:"
@@ -23,16 +36,7 @@ create_table() {
 
     echo "Enter the database in which you would like to create a table: "
     read db_name
-    if [[ ! -d "./$directory" ]]; then
-    echo "Folder doesn't exist, create a database first!"
-    exit
-    else
-        if [[ ! -e "./$directory/$db_name.txt" ]]; 
-        then
-            echo "Database doesn't exist, you need to create it first!"
-            exit
-        fi
-    fi
+    database_check
 
     words=()
     echo "Enter your collumns names (Max size 8 chars):"
@@ -86,13 +90,16 @@ display_data() {
 
     echo "From which database would you like to read a value:"
     read db_name
+
+    database_check
+
     echo "These are the database datatypes:"
     sed -n '/^\*\* /{p;q;}' ./"$directory"/"$db_name.txt"
     echo "What is the value of the parametere you're searching for:"
     read value
 
     echo "Here's the row of data:"
-    grep "^\*\* $value[[:space:]]*\*" ./"$directory"/"$db_name.txt"
+    grep "^\*\* $value[[:space:]]*\*" ./"$directory"/"$db_name.txt" | awk -F'*' '{print $2}'
 
 }
 
@@ -100,6 +107,8 @@ add_data() {
 
     echo "To which database would you like to add?"
     read db_name
+
+    database_check
 
     echo "Enter the values for the following parameters(Enter / for no value): "
     sed -n '/^\*\* /{p;q;}' ./"$directory"/"$db_name.txt"
