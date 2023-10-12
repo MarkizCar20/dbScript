@@ -73,19 +73,68 @@ create_table() {
         pattern+="*"
     
     done
+    #stars=$(printf "*%.0s" {1..39})
     pattern+="*"
     echo "$pattern" >> ./"$directory"/"$db_name.txt"
+    #echo "$stars" >> ./"$directory"/"$db_name.txt"
 
 }
 
+#this can be done with the sed command
 display_data() {
     echo "Data"
 }
 
+#thinking about using either sed or awk
 add_data() {
-    echo "Data add"
+    echo "To which database would you like to add?"
+    read db_name
+
+    echo "Enter the values for the following parameters:"
+    sed -n '/^\*\* /p' ./"$directory"/"$db_name.txt"
+    
+    words=()
+
+    while IFS= read -r word
+    do
+        string_length=${#word}
+        line_length=$((line_length + string_length))
+
+        if [ -z "$word" ]
+        then
+            break
+        fi
+
+        if [ "$string_length" -gt 7 ]
+        then
+            echo "Value too large, choose a smaller value!!"
+            continue
+        fi
+
+        words+=("$word")
+        
+    done
+
+    pattern="**"
+    for word in "${words[@]}"
+    do
+        num_spaces=$((7 - ${#word}))
+        pattern+=" ${word}"
+
+        for ((i = 0; i < num_spaces; i++)); 
+        do
+        pattern+=" "
+        done
+        pattern+="*"
+    
+    done
+
+    pattern+="*"
+    echo "$pattern" >> ./"$directory"/"$db_name.txt"
+    echo "Added row to table!"
 }
 
+#definetely sed with this
 delete_data() {
     echo "Data delete"
 }
