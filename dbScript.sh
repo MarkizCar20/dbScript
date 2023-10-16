@@ -4,6 +4,7 @@
 directory="./databases"
 
 database_check() {
+
     if [[ ! -d "./$directory" ]]; then
     echo "Folder doesn't exist, create a database folder first!"
     exit
@@ -14,6 +15,7 @@ database_check() {
             exit
         fi
     fi
+
 }
 
 create_database() {
@@ -93,13 +95,18 @@ display_data() {
 
     database_check
 
-    echo "These are the database datatypes:"
+    echo "These are the database parameters:"
     sed -n '/^\*\* /{p;q;}' ./"$directory"/"$db_name.txt"
     echo "What is the value of the parametere you're searching for:"
     read value
-
-    echo "Here's the row of data:"
-    grep "^\*\* $value[[:space:]]*\*" ./"$directory"/"$db_name.txt" | awk -F'*' '{print $2}'
+    rows=$(grep "^\*\* $value[[:space:]]*\*" ./"$directory"/"$db_name.txt") 
+    if [ "$rows" = "" ]
+    then
+        echo "There is no data of specified value"
+    else
+        echo "Rows with specified data"
+        echo "$rows"
+    fi
 
 }
 
@@ -110,6 +117,7 @@ add_data() {
 
     database_check
 
+    count=$(grep -m 1 "^\*\* " databases/"$db_name".txt | grep -o "\* " | wc -l)
     echo "Enter the values for the following parameters(Enter / for no value): "
     sed -n '/^\*\* /{p;q;}' ./"$directory"/"$db_name.txt"
     
@@ -117,6 +125,12 @@ add_data() {
 
     while IFS= read -r word
     do
+        if [ "$count" -eq 0 ];
+        then
+            echo "Too many parameters!!"
+            break
+        fi
+
         string_length=${#word}
         line_length=$((line_length + string_length))
 
@@ -136,8 +150,10 @@ add_data() {
             continue
         fi
 
+        (( count-- ))
+        echo $count
+
         words+=("$word")
-        
     done
 
     pattern="**"
