@@ -190,7 +190,26 @@ add_data() {
 
 delete_data() {
 
-    echo "Data delete"
+    read -p "From which table would you like to delete data: " db_name
+    database_check
+    
+    read -p "Enter the column name you're searching for: " col_value
+    read -p "Enter the value you want to delete: " search_value
+
+    awk -F'[ *]+' -v column_value="$col_value" -v search_value="$search_value" '
+        NR == 3 {
+            for(i=1; i <= NF; i++) {
+                if ($i == column_value) {
+                    col=i
+                    break
+                }
+            }
+        }
+        NR <= 3 || $col != search_value {
+            print $0
+        }
+    ' col=0 ./"$directory"/"$db_name.txt" > ./"$directory"/"$db_name.temp"
+    mv ./"$directory"/"$db_name.temp" ./"$directory"/"$db_name.txt"
 
 }
 
