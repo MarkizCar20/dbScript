@@ -7,12 +7,12 @@ database_check() {
 
     if [[ ! -d "./$directory" ]]; then
     echo "Folder doesn't exist, create a database folder first!"
-    break
+    continue
     else
         if [[ ! -e "./$directory/$db_name.txt" ]]; 
         then
             echo "Database doesn't exist, you need to create it first!"
-            break
+            continue
         fi
     fi
 
@@ -192,36 +192,21 @@ delete_data() {
     read -p "Enter the column name you're searching for: " col_value
     read -p "Enter the value you want to delete: " search_value
 
-    found=0
-    data_found=0
     awk -F'[ *]+' -v column_value="$col_value" -v search_value="$search_value" '
         NR == 3 {
             for(i=1; i <= NF; i++) {
                 if ($i == column_value) {
                     col=i
                     break
-                    found=1
                 }
-            }
-            if (found == 0) {
-                exit
             }
         }
         NR <= 3 || $col != search_value {
             print $0
-            data_found=1
         }
     ' col=0 ./"$directory"/"$db_name.txt" > ./"$directory"/"$db_name.temp"
     mv ./"$directory"/"$db_name.temp" ./"$directory"/"$db_name.txt"
 
-    if [ "$found" == 0 ]
-    then
-        echo "Column doesn't exist"
-    fi
-    if [ "$data_found" == 0 ]
-    then
-        echo "Data doesn't exist"
-    fi
 }
 
 display_pages() {
@@ -250,7 +235,7 @@ do
         ;;
         "read-data")
         echo "You chose to read a value"
-        display_data***************************************************
+        display_data
         ;;
         "add-data")
         echo "You chose to add a value"
