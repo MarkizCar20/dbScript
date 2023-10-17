@@ -97,16 +97,32 @@ display_data() {
 
     echo "These are the database parameters:"
     sed -n '/^\*\* /{p;q;}' ./"$directory"/"$db_name.txt"
-    echo "What is the value of the parametere you're searching for:"
-    read value
-    rows=$(grep "^\*\* $value[[:space:]]*\*" ./"$directory"/"$db_name.txt") 
-    if [ "$rows" = "" ]
-    then
-        echo "There is no data of specified value"
-    else
-        echo "Rows with specified data"
-        echo "$rows"
-    fi
+    read -p "Enter the column name: " col_name
+    read -p "Enter the value to search for: " search_value
+
+    awk -F"[ *]+" -v col_name="$col_name" -v search_value="$search_value" '
+        NR == 3 { 
+            for (i = 1; i <= NF; i++) {
+                if ($i == col_name) {
+                 col = i
+                }
+            }
+        }
+
+        NR > 3 && $col == search_value {
+            print $0
+        }
+    ' ./"$directory"/"$db_name.txt"
+
+    # read value
+    # rows=$(grep "^\*\* $value[[:space:]]*\*" ./"$directory"/"$db_name.txt") 
+    # if [ "$rows" = "" ]
+    # then
+    #     echo "There is no data of specified value"
+    # else
+    #     echo "Rows with specified data"
+    #     echo "$rows"
+    # fi
 
 }
 
@@ -123,13 +139,9 @@ add_data() {
     
     words=()
 
-    while IFS= read -r word
+    
+    while [ "$count" -gt 0 ] && IFS= read -r word
     do
-        if [ "$count" -eq 0 ];
-        then
-            echo "Too many parameters!!"
-            break
-        fi
 
         string_length=${#word}
         line_length=$((line_length + string_length))
@@ -151,7 +163,6 @@ add_data() {
         fi
 
         (( count-- ))
-        echo $count
 
         words+=("$word")
     done
